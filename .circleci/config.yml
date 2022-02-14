@@ -54,14 +54,14 @@ jobs:
           path: build/test-results
       - store_artifacts:
           path: build/test-results
-   test_verify_coverage:
+  test_verify_coverage:
       docker:
         - image: openjdk:8-jdk-alpine
       steps:
         - checkout
         - run: apk add --no-cache curl
         - run: ./gradlew test jacocoTestCoverageVerification
-    package_prod:
+  package_prod:
         docker:
           - image: docker:dind
         steps:
@@ -76,7 +76,7 @@ jobs:
               root: ./
               paths:
                 - image.txt
-    deploy_prod:
+  deploy_prod:
         docker:
           - image: docker:dind
         steps:
@@ -107,7 +107,9 @@ workflows:
       - test_verify_coverage:
           requires:
             - test
-
+      - package_prod:
+          requires:
+            - build
       - deploy_prod:
           requires:
             - package_prod
