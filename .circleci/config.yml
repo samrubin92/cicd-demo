@@ -1,19 +1,18 @@
 version: 2.1
 
 jobs:
-  build_and_test:
+  build:
     docker:
       - image: openjdk:8-jdk-alpine
     steps:
       - checkout
-      - run: ./gradlew build
+      - run: ./gradlew bootJar
       - persist_to_workspace:
           root: ./
           paths:
             - build/libs/ci-cd-demo-0.0.1-SNAPSHOT.jar
             - Dockerfile
-      - store_test_results:
-          path: build/test-results
+
 
   package:
     docker:
@@ -44,16 +43,72 @@ jobs:
           name: "Patch the container hosted in heroku"
           command: |
             curl -X PATCH https://api.heroku.com/apps/$HEROKU_APP_NAME/formation --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3.docker-releases" --header "Authorization: Bearer ${HEROKU_TOKEN}" --data '{ "updates": [ { "type": "web", "docker_image": "'$(cat image.txt)'" } ] }'
-
+  test:
+    docker:
+      - image: openjdk:8-jdk-alpine
+    steps:
+      - checkout
+      - run: apk add --no-cache curl
+      - run: ./gradlew test
+      - store_test_results:
+          path: build/test-results
+      - store_artifacts:
+          path: build/test-results
+   test_verify_coverage:
+      docker:
+        - image: openjdk:8-jdk-alpine
+      steps:
+        - checkout
+        - run: apk add --no-cache curl
+        - run: ./gradlew test jacocoTestCoverageVerification
+    package_prod:
+        docker:
+          - image: docker:dind
+        steps:
+          - setup_remote_docker:
+              version: 19.03.13
+          - attach_workspace:
+              at: ./
+          - run: docker build --iidfile image.txt -t registry.heroku.com/$HEROKU_APP_NAME_PROD/web:${CIRCLE_SHA1} .
+          - run: docker login --username=_ --password=$HEROKU_TOKEN registry.heroku.com
+          - run: docker push registry.heroku.com/$HEROKU_APP_NAME_PROD/web:${CIRCLE_SHA1}
+          - persist_to_workspace:
+              root: ./
+              paths:
+                - image.txt
+    deploy_prod:
+        docker:
+          - image: docker:dind
+        steps:
+          - setup_remote_docker:
+              version: 19.03.13
+          - attach_workspace:
+              at: ./
+          - run: apk add --no-cache curl
+          - run:
+              name: "Patch the container hosted in heroku"
+              command: |
+                curl -X PATCH https://api.heroku.com/apps/$HEROKU_APP_NAME/formation --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3.docker-releases" --header "Authorization: Bearer ${HEROKU_TOKEN}" --data '{ "updates": [ { "type": "web", "docker_image": "'$(cat image.txt)'" } ] }'
 
 workflows:
   version: 2
   spring_boot_cicd_workflow:
     jobs:
-      - build_and_test
+      - build
       - package:
           requires:
-            - build_and_test
+            - build
       - deploy:
           requires:
             - package
+      - test:
+          requires:
+            - build
+      - test_verify_coverage:
+          requires:
+            - test
+
+      - deploy_prod:
+          requires:
+            - package_prod
+            - test_verify_coverage

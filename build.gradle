@@ -2,8 +2,33 @@ plugins {
 	id 'org.springframework.boot' version '2.5.4'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id 'jacoco'
 }
 
+//https://reflectoring.io/jacoco/
+jacoco {
+	toolVersion = "0.8.6" //jacoco version
+}
+
+jacocoTestReport {
+	reports {
+		html.destination file("${buildDir}/jacoco/jacocoHtml")
+	}
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			element = 'CLASS'
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.2
+			}
+
+		}
+	}
+}
 group = 'com.bootcamp'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
