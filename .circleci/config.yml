@@ -25,9 +25,10 @@ jobs:
       - run: docker build --iidfile image.txt -t registry.heroku.com/$HEROKU_APP_NAME/web:${CIRCLE_SHA1} .
       - run: docker login --username=_ --password=$HEROKU_TOKEN registry.heroku.com
       - run: docker push registry.heroku.com/$HEROKU_APP_NAME/web:${CIRCLE_SHA1}
-      - run: mkdir ~/tmp
+      - run: echo pwd
+      - run: mkdir /tmp
       - persist_to_workspace:
-          root: ~/
+          root: /
           paths:
             - tmp/image.txt
 
@@ -38,7 +39,7 @@ jobs:
       - setup_remote_docker:
           version: 19.03.13
       - attach_workspace:
-          at: ~/tmp
+          at: /tmp
       - run: ls -a
       - run: apk add --no-cache curl
       - run:
@@ -89,7 +90,7 @@ jobs:
           - setup_remote_docker:
               version: 19.03.13
           - attach_workspace:
-              at: ~/tmp
+              at: /tmp
           - run: ls -a
           - run: apk add --no-cache curl
           - run:
