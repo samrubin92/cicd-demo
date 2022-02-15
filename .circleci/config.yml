@@ -41,7 +41,7 @@ jobs:
       - attach_workspace:
           at: /tmp
       - run: ls -a
-      - run: apt install curl
+      - run: yum install curl
       - run:
           name: "Patch the container hosted in heroku"
           command: |
@@ -91,7 +91,7 @@ jobs:
           - attach_workspace:
               at: /tmp
           - run: ls -a
-          - run: apt install curl
+          - run: yum install curl
           - run:
               name: "Patch the container hosted in heroku"
               command: |
