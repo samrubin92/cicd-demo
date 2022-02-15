@@ -67,22 +67,7 @@ jobs:
         - checkout
         - run: ls -a
         - run: ./gradlew test jacocoTestCoverageVerification
-  package_prod:
-        docker:
-          - image: docker:dind
-        steps:
-          - setup_remote_docker:
-              version: 19.03.13
-          - attach_workspace:
-              at: ./
-          - run: ls -a
-          - run: docker build --iidfile image_prod.txt -t registry.heroku.com/$HEROKU_APP_NAME_PROD/web:${CIRCLE_SHA1} .
-          - run: docker login --username=_ --password=$HEROKU_TOKEN registry.heroku.com
-          - run: docker push registry.heroku.com/$HEROKU_APP_NAME_PROD/web:${CIRCLE_SHA1}
-          - persist_to_workspace:
-              root: ./
-              paths:
-                - image_prod.txt
+
   deploy_prod:
         docker:
           - image: docker:dind
