@@ -38,6 +38,7 @@ jobs:
           version: 19.03.13
       - attach_workspace:
           at: ./
+      - run: ls -a
       - run: apk add --no-cache curl
       - run:
           name: "Patch the container hosted in heroku"
@@ -48,8 +49,10 @@ jobs:
       - image: openjdk:8-jdk-alpine
     steps:
       - checkout
+      - run: ls -a
       - run: apk add --no-cache curl
       - run: ./gradlew test
+
       - store_test_results:
           path: build/test-results
       - store_artifacts:
@@ -59,6 +62,7 @@ jobs:
         - image: openjdk:8-jdk-alpine
       steps:
         - checkout
+        - run: ls -a
         - run: apk add --no-cache curl
         - run: ./gradlew test jacocoTestCoverageVerification
   package_prod:
@@ -69,6 +73,7 @@ jobs:
               version: 19.03.13
           - attach_workspace:
               at: ./
+          - run: ls -a
           - run: docker build --iidfile image_prod.txt -t registry.heroku.com/$HEROKU_APP_NAME_PROD/web:${CIRCLE_SHA1} .
           - run: docker login --username=_ --password=$HEROKU_TOKEN registry.heroku.com
           - run: docker push registry.heroku.com/$HEROKU_APP_NAME_PROD/web:${CIRCLE_SHA1}
@@ -84,6 +89,7 @@ jobs:
               version: 19.03.13
           - attach_workspace:
               at: ./
+          - run: ls -a
           - run: apk add --no-cache curl
           - run:
               name: "Patch the container hosted in heroku"
