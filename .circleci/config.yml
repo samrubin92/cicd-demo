@@ -41,7 +41,7 @@ jobs:
       - attach_workspace:
           at: /tmp
       - run: ls -a
-      - run: apk add --no-cache curl
+      - run: apt install curl
       - run:
           name: "Patch the container hosted in heroku"
           command: |
@@ -52,7 +52,7 @@ jobs:
     steps:
       - checkout
       - run: ls -a
-      - run: apk add --no-cache curl
+      - run: apt install curl
       - run: ./gradlew test
 
       - store_test_results:
@@ -65,7 +65,6 @@ jobs:
       steps:
         - checkout
         - run: ls -a
-        - run: apk add --no-cache curl
         - run: ./gradlew test jacocoTestCoverageVerification
   package_prod:
         docker:
@@ -92,7 +91,7 @@ jobs:
           - attach_workspace:
               at: /tmp
           - run: ls -a
-          - run: apk add --no-cache curl
+          - run: apt install curl
           - run:
               name: "Patch the container hosted in heroku"
               command: |
