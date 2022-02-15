@@ -42,6 +42,8 @@ jobs:
           at: /tmp
       - run: ls -a
       - run: apk add --no-cache curl
+      - run: echo registry.heroku.com/$HEROKU_APP_NAME/web:${CIRCLE_SHA1} > image.txt
+      - run: cat image.txt
       - run:
           name: "Patch the container hosted in heroku"
           command: |
