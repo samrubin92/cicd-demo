@@ -121,3 +121,4 @@ workflows:
       - deploy_prod:
           requires:
             - package
+            - test_verify_coverage
