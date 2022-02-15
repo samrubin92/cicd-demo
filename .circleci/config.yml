@@ -88,15 +88,14 @@ workflows:
   spring_boot_cicd_workflow:
     jobs:
       - build
+      - test
       - package:
           requires:
             - build
+            - test
       - deploy:
           requires:
             - package
-      - test:
-          requires:
-            - build
       - test_verify_coverage:
           requires:
             - test
