@@ -100,9 +100,6 @@ workflows:
       - test_verify_coverage:
           requires:
             - test
-      - package_prod:
-          requires:
-            - build
       - deploy_prod:
           requires:
             - package
