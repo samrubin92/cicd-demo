@@ -26,6 +26,7 @@ jobs:
       - run: docker login --username=_ --password=$HEROKU_TOKEN registry.heroku.com
       - run: docker push registry.heroku.com/$HEROKU_APP_NAME/web:${CIRCLE_SHA1}
       - run: pwd
+      - run: cp image.txt /tmp/image.txt
       - persist_to_workspace:
           root: /tmp
           paths:
