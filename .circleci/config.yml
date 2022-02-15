@@ -28,7 +28,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - image/image.txt
+            - tmp/image.txt
 
   deploy:
     docker:
@@ -37,7 +37,7 @@ jobs:
       - setup_remote_docker:
           version: 19.03.13
       - attach_workspace:
-          at: ~/image/
+          at: ~/tmp
       - run: ls -a
       - run: apk add --no-cache curl
       - run:
@@ -88,7 +88,7 @@ jobs:
           - setup_remote_docker:
               version: 19.03.13
           - attach_workspace:
-              at: ~/image/
+              at: ~/tmp
           - run: ls -a
           - run: apk add --no-cache curl
           - run:
