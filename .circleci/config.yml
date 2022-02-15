@@ -27,9 +27,9 @@ jobs:
       - run: docker push registry.heroku.com/$HEROKU_APP_NAME/web:${CIRCLE_SHA1}
       - run: pwd
       - persist_to_workspace:
-          root: /
+          root: /tmp
           paths:
-            - tmp/image.txt
+            - image.txt
 
   deploy:
     docker:
